@@ -35,3 +35,8 @@ F:\myGitHub\myWPF\myWPF\obj\Debug\myWPF.csproj.GenerateResource.Cache
 F:\myGitHub\myWPF\myWPF\obj\Debug\myWPF.csproj.CoreCompileInputs.cache
 F:\myGitHub\myWPF\myWPF\obj\Debug\myWPF.exe
 F:\myGitHub\myWPF\myWPF\obj\Debug\myWPF.pdb
+F:\myGitHub\myWPF\myWPF\bin\Debug\Resource\Image\2.jpg
+F:\myGitHub\myWPF\myWPF\bin\Debug\Resource\Image\3.jpg
+F:\myGitHub\myWPF\myWPF\bin\Debug\Resource\Image\1.jpg
+F:\myGitHub\myWPF\myWPF\obj\Debug\myWPF_Content.g.cs
+F:\myGitHub\myWPF\myWPF\obj\Debug\myWPF.csprojResolveAssemblyReference.cache

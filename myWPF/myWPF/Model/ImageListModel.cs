@@ -9,8 +9,27 @@ namespace myWPF.Model
 {
     public class ImageListModel : ModelBase
     {
+        private string _id;
+        /// <summary>
+        /// 返回id
+        /// </summary>
+        public string id
+        {
+            get { return _id; }
+            set
+            {
+                if (_id != value)
+                {
+                    _id = value;
+                    RaisePropertyChanged("id");
+                }
+            }
+        }
 
         private string _image;
+        /// <summary>
+        /// 图片Source
+        /// </summary>
         public string image
         {
             get { return _image; }
@@ -24,16 +43,19 @@ namespace myWPF.Model
             }
         }
 
-        private Visibility _is_show;
-        public Visibility is_show
+        private bool _is_old;
+        /// <summary>
+        /// 标记该图片是否是新增的
+        /// </summary>
+        public bool is_old
         {
-            get { return _is_show; }
+            get { return _is_old; }
             set
             {
-                if (_is_show != value)
+                if (_is_old != value)
                 {
-                    _is_show = value;
-                    RaisePropertyChanged("is_show");
+                    _is_old = value;
+                    RaisePropertyChanged("is_old");
                 }
             }
         }

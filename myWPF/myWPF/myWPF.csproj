@@ -144,15 +144,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resource\Image\1.jpg">
+    <Content Include="Resource\Image\2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resource\Image\2.jpg">
+    </Content>
+    <Content Include="Resource\Image\3.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resource\Image\3.jpg">
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resource\Image\1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
