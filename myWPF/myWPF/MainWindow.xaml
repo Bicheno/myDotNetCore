@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:myWPF"
         xmlns:control="clr-namespace:myWPF.Control"
         mc:Ignorable="d"
-        Title="MainWindow" Height="650" Width="625">
+        Title="MainWindow" Height="1000" Width="1500">
     <Grid>
-        <control:HGMenu HorizontalAlignment="Left"/>
+        <!--<control:HGMenu HorizontalAlignment="Left"/>-->
+        <control:ImageList VerticalAlignment="Center" HorizontalAlignment="Center"/>
     </Grid>
 </Window>

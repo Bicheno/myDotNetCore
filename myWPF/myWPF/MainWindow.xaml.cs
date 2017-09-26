@@ -25,8 +25,6 @@ namespace myWPF
         public MainWindow()
         {
             InitializeComponent();
-            new MenuViewModel();
-            //new HGMenuViewModel();
         }
     }
 

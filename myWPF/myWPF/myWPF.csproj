@@ -53,6 +53,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
@@ -80,15 +81,13 @@
     <Compile Include="Control\ImageList.xaml.cs">
       <DependentUpon>ImageList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\Menu.xaml.cs">
-      <DependentUpon>Menu.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converter\IconConverter.cs" />
+    <Compile Include="Converter\ImageConverter.cs" />
     <Compile Include="Model\HGMenuModel.cs" />
+    <Compile Include="Model\ImageListModel.cs" />
     <Compile Include="ViewModel\HGMenuViewModel.cs" />
+    <Compile Include="ViewModel\ImageListViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\MenuViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="Control\HGMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -113,13 +112,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\Menu.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\MenuItemModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -148,6 +142,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\Image\1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resource\Image\2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resource\Image\3.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
