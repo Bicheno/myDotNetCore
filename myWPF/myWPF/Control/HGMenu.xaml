@@ -1,0 +1,201 @@
+﻿<UserControl x:Class="myWPF.Control.HGMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:myWPF.Control"
+             xmlns:viewmodel="clr-namespace:myWPF.ViewModel"
+             xmlns:converter="clr-namespace:myWPF.Converter"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
+             mc:Ignorable="d" x:Name="view"
+             d:DesignHeight="1300" d:DesignWidth="300">
+    <UserControl.DataContext>
+        <viewmodel:HGMenuViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <converter:IconConverter x:Key="IconConverter"/>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="TextTrimming" Value="None"/>
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid x:Name="grid" Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" x:Name="LeftCol" />
+                                <ColumnDefinition Width="*" x:Name="RightCol" />
+                            </Grid.ColumnDefinitions>
+                            <Rectangle x:Name="bd" Fill="Transparent"
+                                       Width="4"/>
+                            <ContentPresenter x:Name="contentPresenter"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Content="{TemplateBinding Content}"
+                                          RecognizesAccessKey="True"
+                                          Grid.Column="1"
+                                               Margin="-4,0,0,0"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                 Value="True">
+                                <Setter TargetName="bd"
+                                    Property="Fill"
+                                    Value="Gray" />
+                                <Setter TargetName="grid"
+                                    Property="Background"
+                                    Value="#B2474747" />
+                            </Trigger>
+                            <Trigger Property="IsChecked"
+                                 Value="True">
+                                <Setter TargetName="bd"
+                                    Property="Fill"
+                                    Value="White" />
+                                <Setter TargetName="grid"
+                                    Property="Background"
+                                    Value="#B28F8F8F" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel x:Name="grid" Background="Black">
+        <Button x:Name="btnMenu" Click="Expand" Foreground="White" DockPanel.Dock="Right" Height="50" Width="50" VerticalAlignment="Center" HorizontalAlignment="Left" Background="Black" BorderThickness="0" ToolTip="菜单" >
+            <Viewbox Height="25" Width="25">
+                <Path Fill="White" Data="M48.7424 153.6l921.6 0 0 76.8-921.6 0 0-76.8ZM48.7424 451.84l921.6 0 0 76.8-921.6 0 0-76.8ZM48.7424 750.08l921.6 0 0 76.8-921.6 0 0-76.8Z"/>
+            </Viewbox>
+        </Button>
+        <ItemsControl ItemsSource="{Binding MenuCollection}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Visibility="{Binding is_auth}">
+                        <RadioButton x:Name="rbMenu" ToolTip="{Binding name}" DockPanel.Dock="Left" Foreground="White" VerticalAlignment="Center">
+                            <DockPanel>
+                                <Grid Height="100" Width="50">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="27*"/>
+                                        <ColumnDefinition Width="23*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Viewbox Height="25" Width="25" Grid.ColumnSpan="2" Margin="12,38">
+                                        <Path Fill="White" Data="{Binding icon}"/>
+                                    </Viewbox>
+                                </Grid>
+                                <TextBlock Text="{Binding display_name}" VerticalAlignment="Center" FontSize="18" Margin="20,0"/>
+                            </DockPanel>
+                        </RadioButton>
+                        <Popup IsOpen="{Binding Path=IsChecked,Mode=TwoWay,ElementName=rbMenu}" AllowsTransparency="True" StaysOpen="False" Placement="Right">
+                            <StackPanel>
+                                <ItemsControl ItemsSource="{Binding submenu_list}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button x:Name="btnMenu" Content="{Binding display_name}" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <ei:CallMethodAction TargetObject="{Binding ElementName=view,Path=DataContext}" MethodName="{Binding method}"/>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Popup>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <!--<Grid>
+            <RadioButton x:Name="rbProductsManagement" ToolTip="商品管理" DockPanel.Dock="Left" Foreground="White" VerticalAlignment="Center">
+                <DockPanel>
+                    <Grid Height="100" Width="50">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="27*"/>
+                            <ColumnDefinition Width="23*"/>
+                        </Grid.ColumnDefinitions>
+                        <Viewbox Height="25" Width="25" Grid.ColumnSpan="2" Margin="12,38">
+                            <Path Fill="White" Data="M631.200846 64.98813 64.989153 631.202892l298.006208 327.807954 596.015486-566.214762L959.010847 64.98813 631.200846 64.98813zM765.305123 362.996384c-57.604976 0-104.302531-46.697555-104.302531-104.302531 0-57.604976 46.697555-104.302531 104.302531-104.302531s104.302531 46.697555 104.302531 104.302531C869.607654 316.298829 822.910099 362.996384 765.305123 362.996384z"/>
+                        </Viewbox>
+                    </Grid>
+                    <TextBlock Text="商品管理" Margin="20,0"/>
+                </DockPanel>
+            </RadioButton>
+            <Popup IsOpen="{Binding Path=IsChecked,Mode=TwoWay,ElementName=rbProductsManagement}" AllowsTransparency="True"  StaysOpen="False" Placement="Right">
+                <StackPanel>
+                    <Button Content="商品列表" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+                    <Button Content="商品分类列表" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+                    <Button Content="属性值分类管理" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+                    <Button Content="属性管理" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+                    <Button Content="商品销售属性映射管理" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+                    <Button Content="商品关联属性映射管理" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+                </StackPanel>
+            </Popup>
+        </Grid>
+        <Grid>
+            <RadioButton x:Name="rbOrderManagement" ToolTip="订单管理" DockPanel.Dock="Left" Foreground="White" VerticalAlignment="Center">
+                <DockPanel>
+                    <Grid Height="100" Width="50">
+                        <Viewbox Height="25" Width="25">
+                            <Path Fill="White" Data="M805.734 76.579l-62.486 0c-17.285 0-37.228 10.335-37.228 27.166 0 16.808 19.942 33.616 37.228 33.616l62.486 0c37.205 0 62.462 24.576 62.462 60.782l0 657.469c0 36.206-25.257 60.781-62.462 60.781L234.235 916.393c-37.228 0-78.43-24.575-78.43-60.781L155.805 198.143c0-36.206 25.257-60.782 62.474-60.782l78.419 0c17.285 0 23.929-16.808 23.929-33.616 0-16.831-6.644-27.166-23.929-27.166l-78.419 0c-87.72 0-124.937 53.014-124.937 122.881l0 649.679c0 75.023 46.518 128.037 131.58 128.037l574.133 0c85.086 0 131.604-43.974 131.604-128.037L930.659 199.46C930.658 129.593 886.798 76.579 805.734 76.579L805.734 76.579 805.734 76.579zM296.698 364.861c0 16.831 14.627 31.049 31.901 31.049L696.73 395.91c17.285 0 31.914-14.219 31.914-31.049 0-16.808-14.629-31.027-31.914-31.027L328.598 333.834C311.325 333.834 296.698 348.052 296.698 364.861L296.698 364.861 296.698 364.861zM695.39 487.878 328.598 487.878c-17.273 0-31.901 14.219-31.901 31.05 0 16.808 14.627 31.026 31.901 31.026L696.73 549.954c17.285 0 31.914-14.219 31.914-31.026C727.303 500.824 712.675 487.878 695.39 487.878L695.39 487.878 695.39 487.878zM695.39 627.953 328.598 627.953c-17.273 0-31.901 14.242-31.901 31.05 0 16.809 14.627 31.027 31.901 31.027L696.73 690.03c17.285 0 31.914-14.219 31.914-31.027C727.303 640.9 712.675 627.953 695.39 627.953L695.39 627.953 695.39 627.953zM454.864 152.897l116.918 0c25.258 0 46.518-24.576 46.518-53.036 0-28.46-21.26-53.037-47.835-53.037L454.864 46.824c-26.575 0-47.846 24.577-47.846 53.037C407.018 128.321 428.289 152.897 454.864 152.897L454.864 152.897 454.864 152.897zM454.864 152.897"/>
+                        </Viewbox>
+                    </Grid>
+                    <TextBlock Text="订单管理" Margin="20,0"/>
+                </DockPanel>
+            </RadioButton>
+            <Popup IsOpen="{Binding Path=IsChecked,Mode=TwoWay,ElementName=rbOrderManagement}" AllowsTransparency="True" StaysOpen="False" Placement="Right">
+                <Button Content="订单列表" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+            </Popup>
+        </Grid>
+        <RadioButton x:Name="rbAfterSalesManagement" ToolTip="售后管理" DockPanel.Dock="Left" Foreground="White" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <DockPanel>
+                    <Grid Height="100" Width="50">
+                        <Viewbox Height="25" Width="25">
+                            <Path Fill="White" Data="M493.336469 1009.034772c-3.440282-1.892155-8.77272-4.816395-15.825298-8.600705l-6.020494-3.268268C408.189484 963.279019 260.257349 884.152528 200.224425 823.603561c-72.589955-72.761969-91.167479-147.760121-94.091719-162.037292v-0.172014l-0.516042-5.160423-2.064169-512.946078L508.817739 12.040988l405.265244 131.246766-2.580211 518.278515c-2.064169 10.320847-19.609609 87.383168-94.091719 162.037292-69.493701 69.837729-257.333109 165.477574-294.316143 183.883084l-16.685369 8.600706-13.073072-7.052579zM159.113052 183.539056l1.892155 469.770536 0.172015 0.516042c2.92424 11.524945 20.125651 72.417941 78.26642 130.730724 54.356459 54.700487 202.632622 133.998992 258.365194 163.929447 2.236183 1.204099 4.300353 2.236183 6.536536 3.440283l3.268268 1.720141 1.720141-0.860071c48.335965-24.598018 210.717285-109.400974 269.030069-168.2298 58.312783-58.484798 75.514195-119.205779 78.26642-130.730724l0.172015-0.516042 1.892155-469.770536-349.876701-113.357299-349.704687 113.357299zM322.698471 734.500252h56.248615v-22.361834h285.715437v22.361834h55.732572v-154.8127H322.698471v154.8127z m56.248615-115.593482h285.715437v55.732572H378.947086v-55.732572z m136.751217-349.876701l12.213002 24.426004h-126.258357l24.942046-49.36805-58.312783-6.364522c-23.049891 56.248614-57.452713 107.336805-103.380481 153.264572l10.148833 33.370738 6.364522 24.426003c7.912649-7.912649 15.825298-16.169326 23.393919-24.426003 7.396607-8.084663 14.105157-15.653284 20.125651-22.877877v159.113052h54.012431v-16.513354h374.818746v-39.219218H577.795397v-35.60692H731.05997v-32.854696h-153.264573v-34.918864H731.05997v-35.606921h-153.264573v-34.918864h167.541744v-37.671091H590.008399c-3.956325-9.116748-8.428691-18.749538-13.761129-28.89837-5.332437-10.148833-11.008903-19.781623-17.029397-28.898371l-56.248614 8.428692 12.729044 25.11406z m8.084664 235.831345h-144.663867v-35.60692h144.663867v35.60692z m0-68.289601h-144.663867v-34.918865h144.663867v34.918865z m0-70.525786h-144.663867v-34.918864h144.663867v34.918864z"/>
+                        </Viewbox>
+                    </Grid>
+                    <TextBlock Text="售后管理" Margin="20,0"/>
+                </DockPanel>
+            </StackPanel>
+        </RadioButton>
+        <Grid>
+            <RadioButton x:Name="rbCustomManagement" ToolTip="客户管理" DockPanel.Dock="Left" Foreground="White" VerticalAlignment="Center">
+                <DockPanel>
+                    <Grid Height="100" Width="50">
+                        <Viewbox Height="25" Width="25">
+                            <Path Fill="White" Data="M781.037 875.077c-2.935-48.785-22.285-87.005-59.18-116.84-30.85-24.95-69.765-40.315-104.095-53.865-41.94-16.56-78.31-30.92-89.285-56.105-1.705-20.325-1.565-36.105-1.4-54.26 0.015-2.765 0.045-5.565 0.065-8.435 8.93-8.925 16.555-22.28 21.9-33.26 4.855-9.975 12.78-28.39 16.77-49.315 5.85-3.005 11.22-7.51 15.75-13.292 8.94-11.405 14.75-27.818 17.27-48.783 2.345-19.545-3.34-34.59-11.18-44.495 5.025-17.077 12.14-45.732 14.74-78.155 3.64-45.42-2.95-82.025-19.59-108.818-15.415-24.815-38.76-40.438-69.478-46.518-16.943-21.405-49.385-33.07-92.673-33.07-0.108 0-0.218 0-0.333 0.01-66.025 1.205-114.34 21.385-143.615 59.96-34.69 45.708-41.138 114.97-19.213 205.998-8.093 9.902-14.055 25.155-11.655 45.085 2.517 20.965 8.33 37.38 17.26 48.783 4.55 5.802 9.938 10.315 15.8 13.32 6.145 31.04 23.08 66.01 39.575 82.485 0.017 2.825 0.035 5.595 0.062 8.31 0.152 18.22 0.297 34.05-1.42 54.445-10.973 25.18-47.498 39.54-89.608 56.11-34.455 13.55-73.515 28.9-104.48 53.85-37.038 29.835-56.465 68.06-59.395 116.84-0.297 4.96 1.465 9.805 4.855 13.42 3.4 3.61 8.14 5.65 13.095 5.65l681.497 0c4.965 0 9.695-2.04 13.095-5.65 3.4-3.615 5.165-8.46 4.87-13.41L781.037 875.077zM101.833 858.162c5.478-29.33 19.66-52.5 43.763-71.92 26.678-21.495 61.448-35.165 95.075-48.395 49.135-19.32 95.543-37.575 110.985-79.095 0.557-1.5 0.91-3.065 1.052-4.66 2.115-23.43 1.963-41.48 1.8-60.58-0.045-5.31-0.09-10.795-0.09-16.52 0-6.605-3.618-12.67-9.4-15.805-6.853-4.835-28.555-39.96-32.163-73.768-0.917-8.6-7.815-15.325-16.423-16.028-2.285-0.19-11.502-6.63-14.885-34.763-1.735-14.417 5.287-19.518 5.333-19.542 6.765-4.127 10.03-12.205 8.04-19.877-10.565-40.653-15.245-76.808-13.903-107.468 1.413-32.44 9.598-58.74 24.338-78.158 22.253-29.32 61.095-44.708 115.455-45.743 33.565 0.027 58.37 8.417 66.368 22.458 2.763 4.847 7.618 8.15 13.148 8.913 23.955 3.327 40.935 13.545 51.915 31.228 27.54 44.333 11.6 126.22-2.16 167.618-2.645 7.96 0.52 16.667 7.69 21.02 0.07 0.052 7.07 5.125 5.34 19.552-3.38 28.133-12.6 34.573-14.885 34.763-8.605 0.7-15.505 7.43-16.425 16.018-3.63 33.988-24.633 68.993-31.26 73.793-5.757 3.16-9.345 9.2-9.345 15.79 0 5.79-0.052 11.33-0.1 16.69-0.17 19.06-0.333 37.045 1.78 60.41 0.145 1.595 0.495 3.16 1.053 4.66 15.432 41.5 61.673 59.755 110.618 79.075 33.485 13.225 68.12 26.895 94.685 48.38 24.015 19.425 38.135 42.595 43.595 71.95L101.83 858.158 101.833 858.162zM955.512 791.407c-3.4 3.605-8.13 5.645-13.09 5.645L832.097 797.052c-9.93 0-17.99-8.05-17.99-17.99 0-9.925 8.06-17.985 17.99-17.985l89.805 0c-4.9-22.44-16.29-40.385-35.015-55.52-22.025-17.815-50.985-29.245-79.005-40.295-41.82-16.5-81.33-32.1-94.775-68.225-0.565-1.505-0.915-3.075-1.06-4.67-1.78-19.83-1.645-35.045-1.505-51.155 0.04-4.515 0.085-9.185 0.085-14.06 0-6.5 3.505-12.48 9.135-15.665 6.04-4.875 22.24-33.46 25.105-60.063 0.905-8.498 7.68-15.173 16.175-15.983 1.64-0.603 7.77-6.62 10.2-26.81 1.17-9.74-2.92-13.427-3.345-13.788-7.05-4.39-10.18-13.042-7.565-20.938 11.43-34.413 24.745-102.353 2.125-138.76-8.775-14.128-22.425-22.305-41.705-24.995-5.53-0.765-10.39-4.065-13.15-8.92-6.115-10.75-26.57-17.43-53.395-17.458-10.73 0.205-20.845 1.087-30.085 2.625-9.795 1.627-19.07-4.99-20.695-14.795-1.625-9.792 4.99-19.068 14.795-20.693 11.01-1.837 22.95-2.88 35.49-3.103 0.11-0.007 0.22-0.007 0.32-0.007 36.825 0 64.64 9.903 79.635 28.095 26.155 5.415 46.105 18.943 59.35 40.268 31.065 50.005 13.78 127.118 4.765 158.355 6.58 8.86 11.155 21.838 9.185 38.405-2.195 18.193-7.295 32.485-15.175 42.503-3.765 4.805-8.18 8.617-13 11.315-5.1 24.553-17.99 53.82-32.23 68.74-0.005 2.05-0.025 4.065-0.04 6.045-0.135 15.075-0.255 28.185 1.12 44.96 9.105 19.915 40.395 32.26 73.455 45.31 29.105 11.485 62.095 24.5 88.41 45.78 31.73 25.65 48.365 58.495 50.87 100.415 0.295 4.95-1.465 9.805-4.865 13.41L955.512 791.407z"/>
+                        </Viewbox>
+                    </Grid>
+                    <TextBlock Text="客户管理" Margin="20,0"/>
+                </DockPanel>
+            </RadioButton>
+            <Popup IsOpen="{Binding Path=IsChecked,Mode=TwoWay,ElementName=rbCustomManagement}" AllowsTransparency="True" StaysOpen="False" Placement="Right">
+                <Button Content="客户列表" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+            </Popup>
+        </Grid>
+        <Grid>
+            <RadioButton x:Name="rbSystemManagement" ToolTip="系统管理" DockPanel.Dock="Left" Foreground="White" VerticalAlignment="Center">
+                <DockPanel>
+                    <Grid Height="100" Width="50">
+                        <Viewbox Height="25" Width="25">
+                            <Path Fill="White" Data="M510.805333 719.018667c112.924444 0 201.159111-91.761778 201.159111-204.686223 0-112.924444-91.761778-204.686222-201.159111-204.686222-112.924444 0-201.159111 91.761778-201.159111 204.686222 0 112.867556 91.761778 204.686222 201.159111 204.686223z m0-56.490667a149.048889 149.048889 0 0 1-148.195555-148.195556c0-81.180444 67.072-148.195556 148.195555-148.195555s148.195556 67.072 148.195556 148.195555a149.048889 149.048889 0 0 1-148.195556 148.195556zM222.492444 878.250667a504.035556 504.035556 0 0 0 124.472889 74.695111c46.193778-42.666667 106.666667-67.584 167.082667-67.584 64 0 120.888889 24.917333 167.139556 67.584a400.156444 400.156444 0 0 0 124.472888-74.695111c-14.222222-60.472889-3.584-124.472889 24.917334-181.361778 32.028444-53.361778 81.806222-96.028444 142.222222-113.777778 3.584-24.917333 7.168-49.720889 7.168-74.695111 0-24.860444-3.640889-49.720889-7.168-74.638222-60.472889-17.806222-110.250667-60.472889-142.222222-113.777778-32.028444-53.361778-39.139556-120.888889-24.917334-181.361778a502.954667 502.954667 0 0 0-124.472888-74.695111c-46.250667 42.666667-103.139556 67.584-167.139556 67.584-60.416 0-120.888889-24.917333-167.082667-67.584a400.156444 400.156444 0 0 0-124.472889 74.695111c14.222222 60.472889 3.584 124.472889-24.917333 181.361778-32.028444 53.361778-81.749333 96.028444-142.222222 113.777778-3.584 24.917333-7.111111 49.777778-7.111111 74.638222 0 24.974222 3.584 49.834667 7.111111 74.695111 60.472889 17.806222 110.250667 60.472889 142.222222 113.777778 28.444444 56.945778 39.139556 120.945778 24.917333 181.361778m124.472889 128a475.136 475.136 0 0 1-167.139555-99.555556c-7.111111-7.111111-10.695111-17.806222-7.111111-24.917333a185.628444 185.628444 0 0 0-17.806223-156.444445c-28.444444-49.777778-71.111111-81.806222-124.472888-92.444444-10.695111-3.584-17.806222-10.695111-17.806223-21.333333-7.111111-32.028444-10.695111-67.584-10.695111-99.612445s3.584-64 10.695111-99.555555a36.522667 36.522667 0 0 1 17.806223-21.333334c53.361778-14.222222 99.555556-46.250667 124.472888-92.444444 28.444444-49.777778 32.028444-103.139556 17.806223-156.444445-3.584-10.695111 0-21.333333 7.111111-24.917333 49.777778-42.666667 106.666667-74.695111 167.139555-99.555556 10.638222-3.584 17.749333 0 24.917334 7.111112 39.139556 39.082667 88.860444 64 142.222222 64s106.666667-21.333333 142.222222-64c7.168-7.111111 17.806222-10.695111 24.917333-7.111112a475.136 475.136 0 0 1 167.139556 99.555556c7.111111 7.111111 10.695111 17.806222 7.111111 24.917333a185.685333 185.685333 0 0 0 17.806222 156.444445c28.444444 49.777778 71.111111 81.806222 124.472889 92.444444 10.695111 3.527111 17.806222 10.695111 17.806222 21.333334 7.111111 32.028444 10.695111 67.527111 10.695112 99.555555s-3.584 64.056889-10.695112 99.612445a36.408889 36.408889 0 0 1-17.806222 21.333333c-53.361778 14.222222-99.555556 46.250667-124.472889 92.444444-28.444444 49.777778-32.028444 103.139556-17.806222 156.444445 3.584 10.695111 0 21.333333-7.111111 24.917333-49.777778 42.666667-106.666667 74.695111-167.139556 99.555556-10.695111 3.584-17.806222 0-24.917333-7.111111-39.082667-39.139556-88.860444-64-142.222222-64s-106.666667 21.333333-142.222222 64a27.136 27.136 0 0 1-17.806223 7.111111h-7.111111z"/>
+                        </Viewbox>
+                    </Grid>
+                    <TextBlock Text="系统管理" Margin="20,0"/>
+                </DockPanel>
+            </RadioButton>
+            <Popup IsOpen="{Binding Path=IsChecked,Mode=TwoWay,ElementName=rbSystemManagement}" AllowsTransparency="True" StaysOpen="False" Placement="Right">
+                <Button Content="商城后台管理" Width="200" Height="60" FontSize="16" Foreground="White" Background="Black" BorderThickness="0"/>
+            </Popup>
+        </Grid>-->
+    </StackPanel>
+</UserControl>
