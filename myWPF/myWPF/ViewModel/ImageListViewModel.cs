@@ -67,8 +67,8 @@ namespace myWPF.ViewModel
             var button = sender as Button;
             if (button != null && button.Tag != null)
             {
-                var parent = (StackPanel)button.Parent;
-                parent.Visibility = Visibility.Collapsed;
+                //var parent = (StackPanel)button.Parent;
+                //parent.Visibility = Visibility.Collapsed;
 
                 var delitem = image_list.FirstOrDefault(i => i.id == button.Tag.ToString());
                 image_list.Remove(delitem);
