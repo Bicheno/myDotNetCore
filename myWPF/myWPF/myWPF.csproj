@@ -93,7 +93,6 @@
     <Compile Include="ViewModel\ComboBoxListViewModel.cs" />
     <Compile Include="ViewModel\HGMenuViewModel.cs" />
     <Compile Include="ViewModel\ImageListViewModel.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
     <Page Include="Control\ComboBoxList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
