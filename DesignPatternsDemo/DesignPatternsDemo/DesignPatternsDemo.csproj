@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DecoratorPattern.cs" />
+    <Compile Include="DelegateDemo.cs" />
+    <Compile Include="DependencyInjection.cs" />
     <Compile Include="FactoryPattern.cs" />
     <Compile Include="ObserverPattern.cs" />
     <Compile Include="ProxyPattern.cs" />

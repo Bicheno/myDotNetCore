@@ -97,27 +97,70 @@ namespace _Console
 
             #region test_代理模式
 
-            //静态代理
-            ProxyInterface proxyInterface = new WeddingCompany(new NormalHome());
-            proxyInterface.Marry();
+            ////静态代理
+            //ProxyInterface proxyInterface = new WeddingCompany(new NormalHome());
+            //proxyInterface.Marry();
 
-            //动态代理
-            var proxyMotheds = new Dictionary<string, DynamicAction>();
-            proxyMotheds.Add("Add", new DynamicAction()
-            {
-                BeforeAction = new Action(() => Console.WriteLine("Before Doing....")),
-                AfterAction = new Action(() => Console.WriteLine("After Doing...."))
-            });
+            ////动态代理
+            //var proxyMotheds = new Dictionary<string, DynamicAction>();
+            //proxyMotheds.Add("Add", new DynamicAction()
+            //{
+            //    BeforeAction = new Action(() => Console.WriteLine("Before Doing....")),
+            //    AfterAction = new Action(() => Console.WriteLine("After Doing...."))
+            //});
 
-            var user = new User();
-            var t = ProxyFactory<User>.Create(user, proxyMotheds);
+            //var user = new User();
+            //var t = ProxyFactory<User>.Create(user, proxyMotheds);
 
-            int count = 0;
+            //int count = 0;
 
-            //t.Add("Tom", 28, out count);
-            //t.SayName();
+            ////t.Add("Tom", 28, out count);
+            ////t.SayName();
 
-            Console.WriteLine(count);
+            //Console.WriteLine(count);
+
+            #endregion
+
+            #region 依赖注入
+
+            ////Setter注入
+            //IServiceClass serviceA = new ServiceClassA();
+            //IServiceClass serviceB = new ServiceClassB();
+            //ClientClass client = new ClientClass();
+
+            //client.Set_ServiceImpl(serviceA);
+            //client.ShowInfo();
+            //client.Set_ServiceImpl(serviceB);
+            //client.ShowInfo();
+
+            //构造注入
+            //IServiceClass serviceA = new ServiceClassA();
+            //IServiceClass serviceB = new ServiceClassB();
+            //ClientClass clientA = new ClientClass(serviceA);
+            //ClientClass clientB = new ClientClass(serviceB);
+
+            //clientA.ShowInfo();
+            //clientB.ShowInfo();
+
+            ////依赖获取
+            //IFactory factory = FactoryContainer.factory;
+            //IWindow window = factory.MakeWindow();
+            //Console.WriteLine("创建 " + window.ShowInfo());
+            //IButton button = factory.MakeButton();
+            //Console.WriteLine("创建 " + button.ShowInfo());
+            //ITextBox textBox = factory.MakeTextBox();
+            //Console.WriteLine("创建 " + textBox.ShowInfo());
+
+            #endregion
+
+            #region 委托
+
+            Heater heater = new Heater();
+            Alarm alarm = new Alarm();
+            heater.BoilEvent += alarm.MakeAlert;//注册方法
+            heater.BoilEvent += (new Alarm()).MakeAlert;//给匿名对象注册方法
+            heater.BoilEvent += Display.ShowMsg;//注册静态方法
+            heater.BoilWater();//烧水，会自动调用注册过对象的方法
 
             #endregion
 
