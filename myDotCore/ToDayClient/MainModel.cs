@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,17 +10,19 @@ namespace ToDayClient
 {
     public class todo_list : ModelBase
     {
-        private string _todo;
+        public int user_id { get; set; }
+
+        private string _content;
         /// <summary>
         /// TODO内容
         /// </summary>
-        public string todo
+        public string content
         {
-            get { return _todo; }
+            get { return _content; }
             set
             {
-                _todo = value;
-                RaisePropertyChanged("todo");
+                _content = value;
+                RaisePropertyChanged("content");
             }
         }
 
@@ -41,6 +44,7 @@ namespace ToDayClient
         /// <summary>
         /// 文本框是否可用
         /// </summary>
+        [JsonIgnore]
         public bool IsEnabled_TODO
         {
             get { return _isEnabled_TODO; }
@@ -54,17 +58,19 @@ namespace ToDayClient
 
     public class done_list: ModelBase
     {
-        private string _done;
+        public int user_id { get; set; }
+
+        private string _content;
         /// <summary>
         /// DONE内容
         /// </summary>
-        public string done
+        public string content
         {
-            get { return _done; }
+            get { return _content; }
             set
             {
-                _done = value;
-                RaisePropertyChanged("done");
+                _content = value;
+                RaisePropertyChanged("content");
             }
         }
 
@@ -86,6 +92,7 @@ namespace ToDayClient
         /// <summary>
         /// 文本框颜色
         /// </summary>
+        [JsonIgnore]
         public string box_color
         {
             get { return _box_color; }
@@ -97,6 +104,38 @@ namespace ToDayClient
         }
     }
 
+    /// <summary>
+    /// http返回结果Json对象
+    /// </summary>
+    public class ResultModel
+    {
+        public int code { get; set; }
+        public string message { get; set; }
+        public object data { get; set; }
+    }
+
+    public enum ApiStatus
+    {
+        [Description("返回成功！")]
+        Success = 200,
+
+        [Description("配置失败！")]
+        ConfigFair = 500,
+
+        [Description("参数解析失败！")]
+        ParaParseFair = 501,
+
+        [Description("服务器内部错误！")]
+        ServerInternalError = 502,
+
+        [Description("数据库操作失败！")]
+        DatabaseError = 503,
+    }
+
+    public class IPModel
+    {
+        public string ip { get; set; }
+    }
     public class ModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -106,4 +145,18 @@ namespace ToDayClient
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
+
+    #region 请求model
+
+    public class AddToDoParaModel
+    {
+        public int user_id { get; set; }
+
+        public int num { get; set; }
+
+        public string content { get; set; }
+
+    }
+
+    #endregion
 }

@@ -7,6 +7,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Common;
+using Infrastructure;
 
 namespace Repository
 {
@@ -19,7 +21,6 @@ namespace Repository
     {
         //定义数据访问上下文对象
         protected readonly TestDbContext _dbContext;
-
         /// <summary>
         /// 通过构造函数注入得到数据上下文对象实例
         /// </summary>
@@ -36,19 +37,8 @@ namespace Repository
         /// <returns></returns>
         public List<T> GetAllList()
         {
+
             return _dbContext.Set<T>().ToList();
-        }
-
-
-
-        /// <summary>
-        /// 返回IQueryable集合，延时加载数据（异步方式）
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public async Task<IQueryable<T>> LoadAllAsync(Expression<Func<T, bool>> predicate)
-        {
-            return predicate != null ? await Task.Run(() => _dbContext.Set<T>().Where(predicate).AsNoTracking<T>()) : await Task.Run(() => _dbContext.Set<T>().AsQueryable<T>().AsNoTracking<T>());
         }
 
 
@@ -60,6 +50,26 @@ namespace Repository
         public List<T> GetAllList(Expression<Func<T, bool>> predicate)
         {
             return _dbContext.Set<T>().Where(predicate).ToList();
+        }
+
+
+        /// <summary>
+        /// 通过Lamda表达式获取实体
+        /// </summary>
+        /// <param name="predicate">Lamda表达式（p=>p.Id==Id）</param>
+        /// <returns></returns>
+        public virtual T Get(Expression<Func<T, bool>> predicate)
+        {
+            return _dbContext.Set<T>().AsNoTracking().SingleOrDefault(predicate);
+        }
+        /// <summary>
+        /// 通过Lamda表达式获取实体（异步方式）
+        /// </summary>
+        /// <param name="predicate">Lamda表达式（p=>p.Id==Id）</param>
+        /// <returns></returns>
+        public virtual async Task<T> GetAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await Task.Run(() => _dbContext.Set<T>().AsNoTracking().SingleOrDefault(predicate));
         }
 
 
@@ -89,6 +99,21 @@ namespace Repository
         }
 
 
+        /// <summary>
+        /// 增加一条记录(异步方式)
+        /// </summary>
+        /// <param name="entity">实体模型</param>
+        /// <param name="IsCommit">是否提交（默认提交）</param>
+        /// <returns></returns>
+        public virtual async Task<bool> InsertAsync(T entity, bool IsCommit = true)
+        {
+            _dbContext.Set<T>().Add(entity);
+            if (IsCommit)
+                return await Task.Run(() => _dbContext.SaveChanges() > 0);
+            else
+                return await Task.Run(() => false);
+        }
+
         public bool Update(T entity, bool autoSave = true)
         {
             _dbContext.Attach(entity);
@@ -99,6 +124,22 @@ namespace Repository
 
         }
 
+
+        /// <summary>
+        /// 更新一条记录（异步方式）
+        /// </summary>
+        /// <param name="entity">实体模型</param>
+        /// <param name="IsCommit">是否提交（默认提交）</param>
+        /// <returns></returns>
+        public virtual async Task<bool> UpdateAsync(T entity, bool IsCommit = true)
+        {
+            _dbContext.Set<T>().Attach(entity);
+            _dbContext.Entry<T>(entity).State = EntityState.Modified;
+            if (IsCommit)
+                return await Task.Run(() => _dbContext.SaveChanges() > 0);
+            else
+                return await Task.Run(() => false);
+        }
 
 
         /// <summary>
@@ -445,7 +486,8 @@ namespace Repository
             List<T> list = entry.ToList();
 
             if (list != null && list.Count == 0) return await Task.Run(() => false);
-            list.ForEach(item => {
+            list.ForEach(item =>
+            {
                 _dbContext.Set<T>().Attach(item);
                 _dbContext.Set<T>().Remove(item);
             });
@@ -481,6 +523,282 @@ namespace Repository
         #endregion
 
 
+
+
+        #region 获取多条数据操作
+
+        /// <summary>
+        /// Lamda返回IQueryable集合，延时加载数据
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public virtual IQueryable<T> LoadAll(Expression<Func<T, bool>> predicate)
+        {
+            return predicate != null ? _dbContext.Set<T>().Where(predicate).AsNoTracking<T>() : _dbContext.Set<T>().AsQueryable<T>().AsNoTracking<T>();
+        }
+        /// <summary>
+        /// 返回IQueryable集合，延时加载数据（异步方式）
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public virtual async Task<IQueryable<T>> LoadAllAsync(Expression<Func<T, bool>> predicate)
+        {
+            return predicate != null ? await Task.Run(() => _dbContext.Set<T>().Where(predicate).AsNoTracking<T>()) : await Task.Run(() => _dbContext.Set<T>().AsQueryable<T>().AsNoTracking<T>());
+        }
+
+        /// <summary>
+        /// 返回List<T>集合,不采用延时加载
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public virtual List<T> LoadListAll(Expression<Func<T, bool>> predicate)
+        {
+            return predicate != null ? _dbContext.Set<T>().Where(predicate).AsNoTracking().ToList() : _dbContext.Set<T>().AsQueryable<T>().AsNoTracking().ToList();
+        }
+        // <summary>
+        /// 返回List<T>集合,不采用延时加载（异步方式）
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public virtual async Task<List<T>> LoadListAllAsync(Expression<Func<T, bool>> predicate)
+        {
+            return predicate != null ? await Task.Run(() => _dbContext.Set<T>().Where(predicate).AsNoTracking().ToList()) : await Task.Run(() => _dbContext.Set<T>().AsQueryable<T>().AsNoTracking().ToList());
+        }
+
+        /// <summary>
+        /// T-Sql方式：返回IQueryable<T>集合
+        /// </summary>
+        /// <param name="sql">SQL语句</param>
+        /// <param name="para">Parameters参数</param>
+        /// <returns></returns>
+        public virtual IQueryable<T> LoadAllBySql(string sql, params DbParameter[] para)
+        {
+            return _dbContext.Set<T>().FromSql(sql, para);
+        }
+        /// <summary>
+        /// T-Sql方式：返回IQueryable<T>集合（异步方式）
+        /// </summary>
+        /// <param name="sql">SQL语句</param>
+        /// <param name="para">Parameters参数</param>
+        /// <returns></returns>
+        public virtual async Task<IQueryable<T>> LoadAllBySqlAsync(string sql, params DbParameter[] para)
+        {
+            return await Task.Run(() => _dbContext.Set<T>().FromSql(sql, para));
+        }
+
+
+        /// <summary>
+        /// T-Sql方式：返回List<T>集合
+        /// </summary>
+        /// <param name="sql">SQL语句</param>
+        /// <param name="para">Parameters参数</param>
+        /// <returns></returns>
+        public virtual List<T> LoadListAllBySql(string sql, params DbParameter[] para)
+        {
+            return _dbContext.Set<T>().FromSql(sql, para).Cast<T>().ToList();
+        }
+        /// <summary>
+        /// T-Sql方式：返回List<T>集合（异步方式）
+        /// </summary>
+        /// <param name="sql">SQL语句</param>
+        /// <param name="para">Parameters参数</param>
+        /// <returns></returns>
+        public virtual async Task<List<T>> LoadListAllBySqlAsync(string sql, params DbParameter[] para)
+        {
+            return await Task.Run(() => _dbContext.Set<T>().FromSql(sql, para).Cast<T>().ToList());
+        }
+
+        /// <summary>
+        /// 可指定返回结果、排序、查询条件的通用查询方法，返回实体对象集合
+        /// </summary>
+        /// <typeparam name="TEntity">实体对象</typeparam>
+        /// <typeparam name="TOrderBy">排序字段类型</typeparam>
+        /// <typeparam name="TResult">数据结果，与TEntity一致</typeparam>
+        /// <param name="where">过滤条件，需要用到类型转换的需要提前处理与数据表一致的</param>
+        /// <param name="orderby">排序字段</param>
+        /// <param name="selector">返回结果（必须是模型中存在的字段）</param>
+        /// <param name="IsAsc">排序方向，true为正序false为倒序</param>
+        /// <returns>实体集合</returns>
+        public virtual List<TResult> QueryEntity<TEntity, TOrderBy, TResult>
+            (Expression<Func<TEntity, bool>> where,
+            Expression<Func<TEntity, TOrderBy>> orderby,
+            Expression<Func<TEntity, TResult>> selector,
+            bool IsAsc)
+            where TEntity : class
+            where TResult : class
+        {
+            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+            if (where != null)
+            {
+                query = query.Where(where);
+            }
+
+            if (orderby != null)
+            {
+                query = IsAsc ? query.OrderBy(orderby) : query.OrderByDescending(orderby);
+            }
+            if (selector == null)
+            {
+                return query.Cast<TResult>().AsNoTracking().ToList();
+            }
+            return query.Select(selector).AsNoTracking().ToList();
+        }
+        /// <summary>
+        /// 可指定返回结果、排序、查询条件的通用查询方法，返回实体对象集合（异步方式）
+        /// </summary>
+        /// <typeparam name="TEntity">实体对象</typeparam>
+        /// <typeparam name="TOrderBy">排序字段类型</typeparam>
+        /// <typeparam name="TResult">数据结果，与TEntity一致</typeparam>
+        /// <param name="where">过滤条件，需要用到类型转换的需要提前处理与数据表一致的</param>
+        /// <param name="orderby">排序字段</param>
+        /// <param name="selector">返回结果（必须是模型中存在的字段）</param>
+        /// <param name="IsAsc">排序方向，true为正序false为倒序</param>
+        /// <returns>实体集合</returns>
+        public virtual async Task<List<TResult>> QueryEntityAsync<TEntity, TOrderBy, TResult>
+            (Expression<Func<TEntity, bool>> where,
+            Expression<Func<TEntity, TOrderBy>> orderby,
+            Expression<Func<TEntity, TResult>> selector,
+            bool IsAsc)
+            where TEntity : class
+            where TResult : class
+        {
+            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+            if (where != null)
+            {
+                query = query.Where(where);
+            }
+
+            if (orderby != null)
+            {
+                query = IsAsc ? query.OrderBy(orderby) : query.OrderByDescending(orderby);
+            }
+            if (selector == null)
+            {
+                return await Task.Run(() => query.Cast<TResult>().AsNoTracking().ToList());
+            }
+            return await Task.Run(() => query.Select(selector).AsNoTracking().ToList());
+        }
+
+        /// <summary>
+        /// 可指定返回结果、排序、查询条件的通用查询方法，返回Object对象集合
+        /// </summary>
+        /// <typeparam name="TEntity">实体对象</typeparam>
+        /// <typeparam name="TOrderBy">排序字段类型</typeparam>
+        /// <param name="where">过滤条件，需要用到类型转换的需要提前处理与数据表一致的</param>
+        /// <param name="orderby">排序字段</param>
+        /// <param name="selector">返回结果（必须是模型中存在的字段）</param>
+        /// <param name="IsAsc">排序方向，true为正序false为倒序</param>
+        /// <returns>自定义实体集合</returns>
+        public virtual List<object> QueryObject<TEntity, TOrderBy>
+            (Expression<Func<TEntity, bool>> where,
+            Expression<Func<TEntity, TOrderBy>> orderby,
+            Func<IQueryable<TEntity>,
+            List<object>> selector,
+            bool IsAsc)
+            where TEntity : class
+        {
+            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+            if (where != null)
+            {
+                query = query.Where(where);
+            }
+
+            if (orderby != null)
+            {
+                query = IsAsc ? query.OrderBy(orderby) : query.OrderByDescending(orderby);
+            }
+            if (selector == null)
+            {
+                return query.AsNoTracking().ToList<object>();
+            }
+            return selector(query);
+        }
+        /// <summary>
+        /// 可指定返回结果、排序、查询条件的通用查询方法，返回Object对象集合（异步方式）
+        /// </summary>
+        /// <typeparam name="TEntity">实体对象</typeparam>
+        /// <typeparam name="TOrderBy">排序字段类型</typeparam>
+        /// <param name="where">过滤条件，需要用到类型转换的需要提前处理与数据表一致的</param>
+        /// <param name="orderby">排序字段</param>
+        /// <param name="selector">返回结果（必须是模型中存在的字段）</param>
+        /// <param name="IsAsc">排序方向，true为正序false为倒序</param>
+        /// <returns>自定义实体集合</returns>
+        public virtual async Task<List<object>> QueryObjectAsync<TEntity, TOrderBy>
+            (Expression<Func<TEntity, bool>> where,
+            Expression<Func<TEntity, TOrderBy>> orderby,
+            Func<IQueryable<TEntity>,
+            List<object>> selector,
+            bool IsAsc)
+            where TEntity : class
+        {
+            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+            if (where != null)
+            {
+                query = query.Where(where);
+            }
+
+            if (orderby != null)
+            {
+                query = IsAsc ? query.OrderBy(orderby) : query.OrderByDescending(orderby);
+            }
+            if (selector == null)
+            {
+                return await Task.Run(() => query.AsNoTracking().ToList<object>());
+            }
+            return await Task.Run(() => selector(query));
+        }
+
+
+        /// <summary>
+        /// 可指定返回结果、排序、查询条件的通用查询方法，返回动态类对象集合
+        /// </summary>
+        /// <typeparam name="TEntity">实体对象</typeparam>
+        /// <typeparam name="TOrderBy">排序字段类型</typeparam>
+        /// <param name="where">过滤条件，需要用到类型转换的需要提前处理与数据表一致的</param>
+        /// <param name="orderby">排序字段</param>
+        /// <param name="selector">返回结果（必须是模型中存在的字段）</param>
+        /// <param name="IsAsc">排序方向，true为正序false为倒序</param>
+        /// <returns>动态类</returns>
+        public virtual dynamic QueryDynamic<TEntity, TOrderBy>
+            (Expression<Func<TEntity, bool>> where,
+            Expression<Func<TEntity, TOrderBy>> orderby,
+            Func<IQueryable<TEntity>,
+            List<object>> selector,
+            bool IsAsc)
+            where TEntity : class
+        {
+            List<object> list = QueryObject<TEntity, TOrderBy>
+                 (where, orderby, selector, IsAsc);
+            return JsonHelper.Instance.Serialize(list);
+        }
+        /// <summary>
+        /// 可指定返回结果、排序、查询条件的通用查询方法，返回动态类对象集合（异步方式）
+        /// </summary>
+        /// <typeparam name="TEntity">实体对象</typeparam>
+        /// <typeparam name="TOrderBy">排序字段类型</typeparam>
+        /// <param name="where">过滤条件，需要用到类型转换的需要提前处理与数据表一致的</param>
+        /// <param name="orderby">排序字段</param>
+        /// <param name="selector">返回结果（必须是模型中存在的字段）</param>
+        /// <param name="IsAsc">排序方向，true为正序false为倒序</param>
+        /// <returns>动态类</returns>
+        public virtual async Task<dynamic> QueryDynamicAsync<TEntity, TOrderBy>
+            (Expression<Func<TEntity, bool>> where,
+            Expression<Func<TEntity, TOrderBy>> orderby,
+            Func<IQueryable<TEntity>,
+            List<object>> selector,
+            bool IsAsc)
+            where TEntity : class
+        {
+            List<object> list = QueryObject<TEntity, TOrderBy>
+                 (where, orderby, selector, IsAsc);
+            return await Task.Run(() => JsonHelper.Instance.Serialize(list));
+        }
+
+        #endregion
+
+
+
+
         /// <summary>
         /// 事务性保存
         /// </summary>
@@ -490,9 +808,5 @@ namespace Repository
             result = _dbContext.SaveChanges() > 0 ? true : false;
             return result;
         }
-
-
-
-
     }
 }

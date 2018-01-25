@@ -16,6 +16,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.IO;
 using Infrastructure;
+using Microsoft.Extensions.Options;
 
 namespace myDotCore
 {
@@ -49,8 +50,12 @@ namespace myDotCore
 
             //依赖注入
             services.AddScoped<IusersRepository, usersRepository>();
+            services.AddScoped<ItodoRepository, todoRepository>();
+            services.AddScoped<IdoneRepository, doneRepository>();
 
             services.AddTransient<usersApp>();
+            services.AddTransient<todoApp>();
+            services.AddTransient<doneApp>();
 
 
             services.AddMvc();
@@ -83,21 +88,25 @@ namespace myDotCore
         {
             //app.Run();
 
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //    app.UseBrowserLink();
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/Home/Error");
+            //}
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
 
             app.UseStaticFiles();
+            app.UseExceptionMiddleware();// 注册全局错误
 
             //Swagger配置
-            app.UseSwagger();
+            app.UseSwagger(c =>
+            {
+                c.PreSerializeFilters.Add((swagger, httpReq) => swagger.Host = httpReq.Host.Value);
+            });
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "myDotCore API V1");

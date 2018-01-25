@@ -39,16 +39,18 @@
                     </i:Interaction.Triggers>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <DockPanel x:Name="TODO_DockPanel" Tag="{Binding num}" MouseEnter="TODO_DockPanel_MouseEnter" MouseLeave="TODO_DockPanel_MouseLeave" Margin="0,0,0,3"  Background="Transparent">
-                                <TextBox x:Name="TODO" Text="{Binding todo}" IsEnabled="{Binding IsEnabled_TODO,Mode=TwoWay}" Tag="{Binding num,Mode=TwoWay}" Width="200" TextWrapping="Wrap" BorderThickness="0" Background="#3099CC33" Margin="32,3,0,0" Padding="5"/>
-                                <Button x:Name="DelBtn" Tag="{Binding num}" MouseEnter="TODO_DockPanel_MouseEnter" MouseLeave="TODO_DockPanel_MouseLeave" Visibility="Hidden"  Width="20" Height="20" Background="White" BorderThickness="1" BorderBrush="#99CC33" Content="✘" Foreground="#99CC33" Margin="5,3,0,0">
+                            <Grid x:Name="TODO_Grid" Tag="{Binding num}" MouseEnter="TODO_Grid_MouseEnter" MouseLeave="TODO_Grid_MouseLeave">
+                                <DockPanel x:Name="TODO_DockPanel" Tag="{Binding num}" Margin="0,0,0,3"  Background="Transparent">
+                                    <TextBox x:Name="TODO" Text="{Binding content}" IsEnabled="{Binding IsEnabled_TODO,Mode=TwoWay}" Tag="{Binding num,Mode=TwoWay}" Width="200" TextWrapping="Wrap" BorderThickness="0" Background="#3099CC33" Margin="32,3,0,0" Padding="5"/>
+                                </DockPanel>
+                                <Button x:Name="DelBtn" Tag="{Binding num}" MouseEnter="TODO_Grid_MouseEnter" MouseLeave="TODO_Grid_MouseLeave" Visibility="Hidden" HorizontalAlignment="Right"  Width="20" Height="20" Background="White" BorderThickness="1" BorderBrush="#99CC33" Content="✘" Foreground="#99CC33" Margin="5,3,0,0">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="Click">
                                             <ei:CallMethodAction TargetObject="{Binding ElementName=View,Path=DataContext}" MethodName="Del"/>
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </Button>
-                            </DockPanel>
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -71,13 +73,12 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <DockPanel x:Name="DONE_DockPanel" Tag="{Binding num}">
-                                    <TextBox x:Name="DONE" Text="{Binding done}" IsEnabled="False" Tag="{Binding num,Mode=TwoWay}" Width="205" TextWrapping="Wrap" BorderThickness="0" Margin="-11,0,0,0" Background="{Binding box_color}" Padding="10,5,5,5"/>
+                                    <TextBox x:Name="DONE" Text="{Binding content}" IsEnabled="False" Tag="{Binding num,Mode=TwoWay}" Width="205" TextWrapping="Wrap" BorderThickness="0" Margin="-11,0,0,0" Background="{Binding box_color}" Padding="10,5,5,5"/>
                                 </DockPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
                 </Border>
-
             </StackPanel>
         </Grid>
     </ScrollViewer>

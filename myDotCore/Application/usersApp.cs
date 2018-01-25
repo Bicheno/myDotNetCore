@@ -2,6 +2,7 @@
 using Model;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Application
 {
@@ -33,6 +34,11 @@ namespace Application
         public users Find(int id)
         {
             return _repository.GetAllList().FindLast(o => o.id == id);
+        }
+
+        public async Task<bool> IsExisit(int user_id)
+        {
+            return await _repository.IsExistAsync(o => o.id == user_id);
         }
     }
 }

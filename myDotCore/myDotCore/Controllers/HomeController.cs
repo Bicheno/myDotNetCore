@@ -80,8 +80,6 @@ namespace myDotCore.Controllers
             {
                 id=null,
                 username = "xz",
-                age = 22,
-                url = "http://www.cnblogs.com/linezero/"
             };
 
             try
@@ -94,37 +92,6 @@ namespace myDotCore.Controllers
             {
                 Console.WriteLine(ex);
             }
-
-
-
-
-
-            // con.Execute("insert into users values(null, '测试', 'http://www.cnblogs.com/linezero/', 18)");
-
-            //新增数据返回自增id
-           // var _id = con.QueryFirst<int>("insert into users values(null, 'linezero', 'http://www.cnblogs.com/linezero/', 18);select last_insert_id();");
-
-            //修改数据
-            //con.Execute("update users set userName = 'linezero123' where id = @id", new
-            //{
-            //    id = _id
-            //});
-
-            //查询数据
-            //var list = con.Query<users>("select * from users");
-            //foreach (var item in list)
-            //{
-            //    Console.WriteLine($"用户名：{item.username} 链接：{item.url}");
-            //}
-
-            //删除数据
-            //con.Execute("delete from users where id = @id", new { id = _id });
-            //Console.WriteLine("删除数据后的结果");
-            //list = con.Query<users>("select * from users");
-            //foreach (var item in list)
-            //{
-            //    Console.WriteLine($"用户名：{item.username} 链接：{item.url}");
-            //}
         }
     }
 }

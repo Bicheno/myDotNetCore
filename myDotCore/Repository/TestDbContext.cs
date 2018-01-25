@@ -12,6 +12,8 @@ namespace Repository
         }
 
         public DbSet<users> users { get; set; }
+        public DbSet<todo> todo { get; set; }
+        public DbSet<done> done { get; set; }
 
     }
 }

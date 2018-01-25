@@ -31,8 +31,12 @@ namespace myDotCore
         public static IWebHost BuildWebHost(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls("http://*:49712")
+                .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseUrls("http://localhost:5001/")//自定义监听地址
+                .UseApplicationInsights()
                 .Build();
         }
     }

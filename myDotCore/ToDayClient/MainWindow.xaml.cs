@@ -58,15 +58,15 @@ namespace ToDayClient
             }
         }
 
-        private void TODO_DockPanel_MouseEnter(object sender, MouseEventArgs e)
+        private void TODO_Grid_MouseEnter(object sender, MouseEventArgs e)
         {
             try
             {
-                var dockpanel = sender as DockPanel;
-                if (dockpanel != null && dockpanel.Tag != null)
+                var grid = sender as Grid;
+                if (grid != null && grid.Tag != null)
                 {
-                    //获取鼠标当前移入的DockPanel下的删除按钮
-                    var cur_btn = VisualTreeHelper.GetChild(dockpanel, 1) as FrameworkElement;
+                    //获取鼠标当前移入的grid下的删除按钮
+                    var cur_btn = VisualTreeHelper.GetChild(grid, 1) as FrameworkElement;
                     if (cur_btn is Button)
                     {
                         cur_btn.Visibility = Visibility.Visible;
@@ -79,15 +79,15 @@ namespace ToDayClient
             }
         }
 
-        private void TODO_DockPanel_MouseLeave(object sender, MouseEventArgs e)
+        private void TODO_Grid_MouseLeave(object sender, MouseEventArgs e)
         {
             try
             {
-                var dockpanel = sender as DockPanel;
-                if (dockpanel != null && dockpanel.Tag != null)
+                var grid = sender as Grid;
+                if (grid != null && grid.Tag != null)
                 {
                     //获取鼠标当前移入的DockPanel下的删除按钮
-                    var cur_btn = VisualTreeHelper.GetChild(dockpanel, 1) as FrameworkElement;
+                    var cur_btn = VisualTreeHelper.GetChild(grid, 1) as FrameworkElement;
                     if (cur_btn is Button)
                     {
                         cur_btn.Visibility = Visibility.Hidden;
@@ -218,7 +218,7 @@ namespace ToDayClient
 
                 var model = DONE_ListView.DataContext as MainWindowViewModel;
                 done_list list = new done_list();
-                list.done = data.todo;
+                list.content = data.content;
                 list.num = data.num;
                 list.box_color = "#BBBBBB";
                 model.done_list.Add(list);

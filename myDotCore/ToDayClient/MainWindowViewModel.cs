@@ -4,16 +4,22 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using ToDayClient.Helper;
 
 namespace ToDayClient
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        #region 属性
+
+        HttpHelper hp = new HttpHelper();
+
         public string Title { get; set; }
 
         private ObservableCollection<todo_list> _todo_list;
@@ -38,13 +44,18 @@ namespace ToDayClient
             }
         }
 
+        #endregion
 
+        #region 方法
 
         public MainWindowViewModel()
         {
             Title = "ToDay - " + DateTime.Now.ToLongDateString().ToString();
             todo_list = new ObservableCollection<todo_list>();
             done_list = new ObservableCollection<done_list>();
+
+            Task task = new Task(new Action(CheckWriteIn));
+            task.Start();
         }
 
         public void Add()
@@ -52,7 +63,7 @@ namespace ToDayClient
             try
             {
                 if (todo_list == null) return;
-                todo_list.Add(new todo_list() { todo = "", num = todo_list.Count });
+                todo_list.Add(new todo_list() { user_id = 1, content = "", num = todo_list.Count });
             }
             catch (Exception ex)
             {
@@ -120,8 +131,34 @@ namespace ToDayClient
             }
         }
 
+        public void CheckWriteIn()
+        {
+            try
+            {
+                while (true)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(100));
 
+                    if (todo_list == null || todo_list.Count < 1) return;
 
+                    //List<AddToDoParaModel> addToDoPara = new List<AddToDoParaModel>();
+                    //todo_list.CopyTo(addToDoPara,0);
+
+                    string result;
+                    bool res = hp.Post<object>(todo_list, "/Client/addtodo", out result);
+                    if (res)
+                    {
+
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+
+        #region 私有辅助方法
 
         public List<FrameworkElement> resElement;
 
@@ -147,5 +184,9 @@ namespace ToDayClient
                 }
             }
         }
+
+        #endregion
+
+        #endregion
     }
 }
